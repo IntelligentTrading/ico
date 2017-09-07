@@ -1,11 +1,14 @@
-# To deploy this file
+# Used in test_deploy_acceptance.py, corresponding to allocated-token-sale-example.yml
 #
-kovan:
+# Please note that some numbers are slightly changed.
+#
 
-    chain: kovan
+testrpc:
+
+    chain: testrpc
 
     # Use automated Chrome to verify all contracts on etherscan.io
-    verify_on_etherscan: yes
+    verify_on_etherscan: no
     browser_driver: chrome
 
     solc:
@@ -64,7 +67,7 @@ kovan:
             arguments:
                 _name: ""
                 _symbol: ""
-                _initialSupply: "{{ 100000000000*10**18 }}"
+                _initialSupply: "{{ 200000000*10**18 }}"
                 _decimals: 18
                 _mintable: false
         #
@@ -78,27 +81,24 @@ kovan:
             contract_file: EthTranchePricing.sol
             arguments:
                 _tranches:
-                    # This trance starts instantly.
-                    # How many weis one token costs. 20% bonus tier.
-                    # Price is base_price / 1.2
+                    # 400 tokens per ETH
                     - 0
-                    - 2272727272727
+                    - 2500000000000000
 
-                    # This trance starts when we have sold 45k worth of tokens.
-                     # Token price is 10% bonus tokens (base price / 1.1)
-                    - "{{ to_wei('45000.00', 'ether') }}"
-                    - 2380952380952
+                    # 366 tokens per ETH
+                    - "{{ to_wei('18750', 'ether') }}"
+                    - 2727272727272730
 
-                    # This is the base price that is effective until the token
-                    # sale ends.
-                    - "{{ to_wei('90000.00', 'ether') }}"
-                    - 2500000000000
+                    # 333 tokens per ETH
+                    - "{{ to_wei('39204.54545', 'ether') }}"
+                    - 3000000000000000
 
-                    # Dummy milestone marker to mark the end
-                    # of the array.
-                    - "{{ to_wei('999999999999999', 'ether') }}"
+                    # 333 tokens per ETH
+                    - "{{ to_wei('62454.54545', 'ether') }}"
+                    - 3000000000000000
+
+                    - "{{ to_wei('9999999999', 'ether') }}"
                     - 0
-
 
         #
         # Crowdsale.
@@ -115,7 +115,7 @@ kovan:
                 _multisigWallet: "{{contracts.team_multisig.address}}"
                 _start: "{{ timestamp(datetime(2099, 7, 12, 13, 00)) }}"
                 _end: "{{ timestamp(datetime(2099, 7, 26, 13, 00)) }}"
-                _minimumFundingGoal: "{{ to_wei(15000, 'ether') }}"
+                _minimumFundingGoal: "{{ to_wei(1, 'ether') }}"
                 _beneficiary: "{{deploy_address}}"
         #
         # Because deploy_address controls whole supply,
@@ -132,7 +132,7 @@ kovan:
     post_actions: |
 
         # Allow crowdsale contract to sell its token
-        token.transact({"from": deploy_address}).approve(crowdsale.address, 70000000000*10**18)
+        token.transact({"from": deploy_address}).approve(crowdsale.address, 70000000*(10**18))
 
         # Make sure crowdsale contract and these accounts
         # can transfer tokens despite transfer lock up
